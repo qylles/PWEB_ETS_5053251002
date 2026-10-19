@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +9,14 @@
 </head>
 <body>
     <h1>Freelancing Money Management</h1>
+
+    <h3>Ringkasan Keuangan</h3>
+    <section id="summary">
+        <p>Saldo: Rp<span id="balance">0</span></p>
+        <p>Pemasukan: Rp<span id="income">0</span></p>
+        <p>Pengeluaran: Rp<span id="expense">0</span></p>
+        <p>Total Piutang: Rp<span id="receivables">0</span></p>
+    </section>
 
     <h3>Tambah Transaksi</h3>
 
@@ -45,8 +53,62 @@
     </form>
 
     <h3>Riwayat Transaksi</h3>
-    <p id="emptyTransactions">Belum ada transaksi.</p>
-    <ul id="transactionList"></ul>
+        <p id="emptyTransactions">Belum ada transaksi.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tanggal</th>
+                    <th>Kategori</th>
+                    <th>Jenis</th>
+                    <th>Nominal</th>
+                    <th>Catatan</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="transactionList"></tbody>
+        </table>
+
+    <hr>
+
+    <h3>Tambah Tagihan Klien</h3>
+
+    <form id="invoiceForm">
+        <label for="client">Nama Klien</label>
+        <input id="client" type="text" placeholder="Nama klien" required>
+
+        <label for="project">Nama Proyek</label>
+        <input id="project" type="text" placeholder="Nama proyek" required>
+
+        <label for="invoiceAmount">Nominal Tagihan</label>
+        <input id="invoiceAmount" type="number" min="1" step="1" required>
+
+        <label for="invoiceDate">Tanggal Tagihan</label>
+        <input id="invoiceDate" type="date" required>
+
+        <label for="dueDate">Tanggal Jatuh Tempo</label>
+        <input id="dueDate" type="date" required>
+
+        <p id="invoiceError" role="alert"></p>
+
+        <button type="submit">Tambah Tagihan</button>
+    </form>
+
+    <h3>Daftar Tagihan Klien</h3>
+        <p id="emptyInvoices">Belum ada tagihan.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Klien</th>
+                    <th>Proyek</th>
+                    <th>Nominal</th>
+                    <th>Tanggal Tagihan</th>
+                    <th>Jatuh Tempo</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="invoiceList"></tbody>
+        </table>
 
     <script src="script.js"></script>
 </body>

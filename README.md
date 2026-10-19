@@ -56,7 +56,7 @@ Menyimpan data tagihan klien freelancer.
 - [x] **W3 — Hapus transaksi**
   - Ada konfirmasi sebelum transaksi dihapus.
 
-- [ ] **W4 — Data persisten**
+- [x] **W4 — Data persisten**
   - Data tetap ada setelah halaman di-refresh atau browser ditutup.
 
 - [ ] **W5 — Ringkasan**
