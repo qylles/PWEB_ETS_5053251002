@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Personal Money Management</title>
+</head>
+<body>
+    <h1>Freelancing Money Management</h1>
+
+    <h3>Tambah Transaksi</h3>
+
+    <form id="moneyForm">
+        <label for="date">Tanggal</label>
+        <input id="date" type="date" required>
+
+        <label for="type">Jenis Transaksi</label>
+        <select id="type" required>
+            <option value="income">Pemasukan</option>
+            <option value="expense">Pengeluaran</option>
+        </select>
+
+        <label for="category">Kategori</label>
+        <select id="category" required>
+            <option value="">Pilih kategori</option>
+            <option value="Freelance">Freelance</option>
+            <option value="Makanan">Makanan</option>
+            <option value="Transportasi">Transportasi</option>
+            <option value="Software">Software</option>
+            <option value="Internet">Internet</option>
+            <option value="Lainnya">Lainnya</option>
+        </select>
+
+        <label for="amount">Nominal</label>
+        <input id="amount" type="number" min="1" step="1" required>
+
+        <label for="description">Catatan (opsional)</label>
+        <input id="description" type="text" placeholder="Catatan transaksi">
+
+        <p id="formError" role="alert"></p>
+
+        <button type="submit">Tambah Transaksi</button>
+    </form>
+
+    <h3>Riwayat Transaksi</h3>
+    <p id="emptyTransactions">Belum ada transaksi.</p>
+    <ul id="transactionList"></ul>
+
+    <script src="script.js"></script>
+</body>
+</html>
