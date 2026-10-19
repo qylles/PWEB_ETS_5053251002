@@ -59,17 +59,20 @@ Menyimpan data tagihan klien freelancer.
 - [x] **W4 — Data persisten**
   - Data tetap ada setelah halaman di-refresh atau browser ditutup.
 
-- [ ] **W5 — Ringkasan**
+- [x] **W5 — Ringkasan**
   - Total pemasukan, pengeluaran, dan saldo diperbarui otomatis.
 
-- [ ] **W6 — Validasi form**
+- [x] **W6 — Validasi form**
   - Nominal lebih dari 0, field wajib terisi, dan pesan error tampil di halaman.
 
-- [ ] **W7 — Tagihan klien**
-  - Bisa mencatat tagihan klien dan nominalnya.
+## Keputusan Design
 
-- [ ] **W8 — Status pembayaran**
-  - Status unpaid/paid dan pelunasan otomatis menjadi pemasukan tanpa duplikasi.
+Saya menggunakan localStorage untuk menyimpan data transaksi dan tagihan agar data tetap tersimpan saat halaman direfresh atau ditutup.
 
-- [ ] **W9 — Ringkasan piutang**
-  - Total tagihan yang belum dibayar ditampilkan dan diperbarui otomatis.
+tagihan yang berstatus paid otomatis dicatat sebagai pemasukan agar pengguna tidak perlu memasukkan transaksi yang sama secara manual. Setiap transaksi pemasukan dari tagihan dihubungkan menggunakan invoiceId untuk mencegah pencatatan pemasukan ganda.
+
+1. Ringkasan pemasukan dan saldo menampilkan nilai NaN
+Hal ini terjadi karena data nominal yang digunakan dalam perhitungan tidak terbaca sebagai angka yang valid atau terdapat ketidaksesuaian struktur data. Saya mengatasinya dengan memeriksa struktur data transaksi dan menyesuaikan proses perhitungan ringkasan dengan data yang tersimpan di localStorage.
+
+2. Ringkasan tidak menampilkan hasil perhitungan (undefined)
+Kendala ini terjadi karena fungsi atau properti yang digunakan untuk mengambil hasil ringkasan tidak menghasilkan nilai yang sesuai. Saya mengatasinya dengan memeriksa nama fungsi, nilai yang dikembalikan oleh fungsi (return), dan cara hasilnya dipanggil pada bagian aplikasi yang menampilkan ringkasan.

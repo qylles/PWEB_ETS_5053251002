@@ -22,12 +22,38 @@ function muatData() {
     const invoiceTersimpan = localStorage.getItem("invoices");
 
     if (dataTersimpan) {
-        transactions = JSON.parse(dataTersimpan);
+        transactions = JSON.parse(dataTersimpan).map(function (transaction, index) {
+            return {
+                id: transaction.id || Date.now() + index,
+                tanggal: transaction.tanggal || transaction.date || "",
+                jenis: transaction.jenis || (
+                    String(transaction.type || "").toLowerCase() === "pemasukan"
+                    || String(transaction.type || "").toLowerCase() === "income"
+                        ? "pemasukan"
+                        : "pengeluaran"
+                ),
+                kategori: transaction.kategori || transaction.category || "Lainnya",
+                nominal: Number(transaction.nominal ?? transaction.amount ?? 0),
+                catatan: transaction.catatan ?? transaction.description ?? ""
+            };
+        });
     }
 
     if (invoiceTersimpan) {
-        invoices = JSON.parse(invoiceTersimpan);
+        invoices = JSON.parse(invoiceTersimpan).map(function (invoice, index) {
+            return {
+                id: invoice.id || Date.now() + index,
+                client: invoice.client || "",
+                project: invoice.project || "",
+                nominal: Number(invoice.nominal ?? invoice.amount ?? 0),
+                tanggal: invoice.tanggal || invoice.date || "",
+                jatuhTempo: invoice.jatuhTempo || invoice.dueDate || "",
+                status: invoice.status || "belum dibayar"
+            };
+        });
     }
+
+    simpanData();
 }
 
 moneyForm.addEventListener("submit", function (e) {
@@ -35,9 +61,17 @@ moneyForm.addEventListener("submit", function (e) {
 
     const date = document.getElementById("date").value;
     const description = document.getElementById("description").value.trim();
-    const amount = Number(document.getElementById("amount").value);
+    const amountInput = document.getElementById("amount").value;
+    const amount = Number(amountInput);
     const type = document.getElementById("type").value;
     const category = document.getElementById("category").value;
+
+    if (!date || !type || !category || !amountInput ||
+        !Number.isFinite(amount) || amount <= 0) {
+        formError.textContent =
+            "Lengkapi field wajib dan masukkan nominal lebih dari 0.";
+        return;
+    }
 
     const transaction = {
         id: Date.now(),
@@ -60,6 +94,7 @@ moneyForm.addEventListener("submit", function (e) {
     moneyForm.reset();
 
     renderTransactions();
+    renderSummary();
 });
 
 function renderTransactions() {
@@ -89,7 +124,9 @@ function renderTransactions() {
         deleteButton.type = "button";
 
         deleteButton.addEventListener("click", function () {
-            const confirmed = confirm("Yakin ingin menghapus transaksi ini?");
+            const confirmed = confirm(
+                "Yakin ingin menghapus transaksi ini?"
+            );
 
             if (confirmed) {
                 deleteTransaction(transaction.id);
@@ -109,16 +146,31 @@ function deleteTransaction(id) {
 
     simpanData();
     renderTransactions();
+    renderSummary();
 }
 
 invoiceForm.addEventListener("submit", function (e) {
     e.preventDefault();
 
-    const client = document.getElementById("invoiceClient").value.trim();
-    const project = document.getElementById("invoiceProject").value.trim();
-    const amount = Number(document.getElementById("invoiceAmount").value);
+    const client = document.getElementById("client").value.trim();
+    const project = document.getElementById("project").value.trim();
+    const amountInput = document.getElementById("invoiceAmount").value;
+    const amount = Number(amountInput);
     const date = document.getElementById("invoiceDate").value;
     const dueDate = document.getElementById("dueDate").value;
+
+    if (!client || !project || !amountInput || !date || !dueDate ||
+        !Number.isFinite(amount) || amount <= 0) {
+        invoiceError.textContent =
+            "Lengkapi field wajib dan masukkan nominal lebih dari 0.";
+        return;
+    }
+
+    if (dueDate < date) {
+        invoiceError.textContent =
+            "Tanggal jatuh tempo tidak boleh sebelum tanggal invoice.";
+        return;
+    }
 
     const invoice = {
         id: Date.now(),
@@ -138,6 +190,7 @@ invoiceForm.addEventListener("submit", function (e) {
     invoiceForm.reset();
 
     renderInvoices();
+    renderSummary();
 });
 
 function renderInvoices() {
@@ -171,7 +224,9 @@ function renderInvoices() {
             paidButton.type = "button";
 
             paidButton.addEventListener("click", function () {
-                const confirmed = confirm("Tandai invoice ini sebagai lunas?");
+                const confirmed = confirm(
+                    "Tandai invoice ini sebagai lunas?"
+                );
 
                 if (confirmed) {
                     payInvoice(invoice.id);
@@ -187,7 +242,9 @@ function renderInvoices() {
         deleteButton.type = "button";
 
         deleteButton.addEventListener("click", function () {
-            const confirmed = confirm("Yakin ingin menghapus invoice ini?");
+            const confirmed = confirm(
+                "Yakin ingin menghapus invoice ini?"
+            );
 
             if (confirmed) {
                 deleteInvoice(invoice.id);
@@ -216,7 +273,7 @@ function payInvoice(id) {
         tanggal: invoice.tanggal,
         jenis: "pemasukan",
         kategori: "Pembayaran Invoice",
-        nominal: invoice.nominal,
+        nominal: Number(invoice.nominal) || 0,
         catatan: invoice.client + " - " + invoice.project
     };
 
@@ -230,6 +287,7 @@ function payInvoice(id) {
 
     renderInvoices();
     renderTransactions();
+    renderSummary();
 }
 
 function deleteInvoice(id) {
@@ -239,8 +297,37 @@ function deleteInvoice(id) {
 
     simpanData();
     renderInvoices();
+    renderSummary();
+}
+
+function renderSummary() {
+    let income = 0;
+    let expense = 0;
+    let receivables = 0;
+
+    transactions.forEach(function (transaction) {
+        const nominal = Number(transaction.nominal) || 0;
+
+        if (transaction.jenis === "pemasukan") {
+            income += nominal;
+        } else if (transaction.jenis === "pengeluaran") {
+            expense += nominal;
+        }
+    });
+
+    invoices.forEach(function (invoice) {
+        if (invoice.status === "belum dibayar") {
+            receivables += Number(invoice.nominal) || 0;
+        }
+    });
+
+    document.getElementById("income").textContent = income;
+    document.getElementById("expense").textContent = expense;
+    document.getElementById("balance").textContent = income - expense;
+    document.getElementById("receivables").textContent = receivables;
 }
 
 muatData();
 renderTransactions();
 renderInvoices();
+renderSummary();
